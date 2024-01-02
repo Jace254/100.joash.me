@@ -6,6 +6,9 @@
       </NuxtLink>
       <div flex-auto />
       <ColorSchemeToggle />
+      <a class="select-none" title="Github" href="https://github.com/Jace254/100.joash.me" rel="noopener" target="_blank" >
+        <div  i-carbon-logo-github text-1.5em dark:hover:bg-white style="transition: background-color 0.3s ease-in-out;"/>
+      </a>
     </nav>
   </header>
 </template>
