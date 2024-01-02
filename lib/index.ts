@@ -3,8 +3,7 @@ import type { Info } from './types'
 const info: Info[] = [
   {
     title: 'Balance',
-    date: '01/24',
-    // draft: true,
+    date: '01/02',
   },
 ]
 

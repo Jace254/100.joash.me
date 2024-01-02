@@ -23,7 +23,7 @@ const active = ref(false)
 </template>
 
 <style>
-  .note.handle {
+  .note .handle {
     left: calc(50% - 20px);
     width: 40px;
     height: 40px;
@@ -31,7 +31,7 @@ const active = ref(false)
     cursor: default;
   }
 
-  .note.content {
+  .note .content {
     pointer-events: none;
     left: 50%;
     width: 500px;
@@ -41,7 +41,7 @@ const active = ref(false)
     transition: 0.3s all ease-in-out;
   }
 
-  .note.modal-bg {
+  .note .modal-bg {
     pointer-events: none;
     opacity: 0;
     transition: 0.2s opacity ease-in-out;

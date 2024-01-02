@@ -1,36 +1,48 @@
 <script setup lang='ts'>
+'use-client'
 import { useEventListener, useFullscreen, useTitle } from '@vueuse/core'
 import { submissions } from '@/lib'
 
-// const fullscreen = useFullscreen(ref(document?.querySelector('html') ?? null))
+const no = ref()
 
-// useEventListener('keydown', (e) => {
-//   if (document) {
-//     if (document.activeElement === document.body) {
-//       if (e.key === 'f') {
-//         if (fullscreen.isFullscreen.value)
-//           fullscreen.exit()
-//         else
-//           fullscreen.enter()
-//       }
-//     }
-//   }
-// })
+const shot = ref()
+const hideFrame = ref()
 
-const route = useRoute()
-let no = route.path.slice(1)
-if (no.startsWith('x'))
-  no = no.slice(1)
+const submission = ref<typeof submissions[0]>()
+const index = ref<number>()
+const prev = ref<typeof submissions[0]>()
+const next = ref<typeof submissions[0]>()
 
-const shot = Boolean(route.query.shot)
-const hideFrame = Boolean(route.query.hideFrame)
-const index = submissions.findIndex(i => i.no === no)
+onMounted(async () => {
+  await refreshNuxtData()
+  const route = useRoute()
+  shot.value = Boolean(route.query.shot)
+  hideFrame.value = Boolean(route.query.hideFrame)
+  no.value = route.path.slice(1)
+  if (no.value.startsWith('x'))
+    no.value = no.value.slice(1)
+  index.value = submissions.findIndex(i => i.no === no.value)
+  submission.value = submissions[index.value]
+  prev.value = submissions[index.value - 1]
+  next.value = submissions[index.value + 1]
 
-const submission = submissions[index]
-const prev = submissions[index - 1]
-const next = submissions[index + 1]
+  const fullscreen = useFullscreen(ref(document?.querySelector('html') ?? null))
 
-useTitle(submission ? `${no}. ${submission.title}` : '404')
+  useEventListener('keydown', (e) => {
+    if (document) {
+      if (document.activeElement === document.body) {
+        if (e.key === 'f') {
+          if (fullscreen.isFullscreen.value)
+            fullscreen.exit()
+          else
+            fullscreen.enter()
+        }
+      }
+    }
+  })
+})
+
+useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
 </script>
 
 <template>
@@ -58,7 +70,7 @@ useTitle(submission ? `${no}. ${submission.title}` : '404')
     </div>
     <div v-if="!shot && !hideFrame" class="nav font-mono">
       <RouterLink class="link  h-4 block pt-2 " to="/">
-        <div text-2xl i-akar-icons-arrow-back/>
+        <div text-2xl i-akar-icons-arrow-back />
       </RouterLink>
     </div>
     <slot :submission="submission" />
@@ -66,7 +78,7 @@ useTitle(submission ? `${no}. ${submission.title}` : '404')
 </template>
 
 <style scoped>
-.paper {
+.viewer {
     display: -ms-grid;
     display: grid;
     position: fixed;

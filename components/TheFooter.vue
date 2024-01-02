@@ -1,6 +1,6 @@
 <template>
   <footer mt-8 mb-2>
-    <h1 font-mono >
+    <h1 font-mono text-sm md:text-md>
       <a href="https://joash.me" rel="noopener" target="_blank" class="link">@joashagesa</a>
       &bull;
       <a href="https://twitter.com/JoashMacenton" rel="noopener" target="_blank" class="link">twitter</a>

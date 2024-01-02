@@ -5,9 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="centered" block>
     Draft
-  </div>
   <!-- <Note>
     Small Note
   </Note> -->
