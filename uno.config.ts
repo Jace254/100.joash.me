@@ -26,8 +26,8 @@ export default defineConfig({
     presetWebFonts({
       provider: 'bunny',
       fonts: {
-        sans: 'Ubuntu',
-        mono: 'DM Mono',
+        sans: 'DM Mono',
+        mono: 'Fira Code',
       },
     }),
     presetTypography(),

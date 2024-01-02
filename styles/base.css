@@ -20,6 +20,17 @@
     mask-image: linear-gradient(var(--direction),var(--mask-visible) 25%,var(--mask-hidden));
 }
 
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.link {
+    --apply: text-gray-400 dark:text-gray-700  hover:text-gray-700 dark:hover:text-gray-400 transition select-none;
+}
+
 :root {
     --c-bg: #fff;
     --c-scrollbar: #eee;
