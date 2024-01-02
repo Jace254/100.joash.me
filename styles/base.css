@@ -27,6 +27,13 @@
     transform: translate(-50%,-50%);
 }
 
+.box-description {
+    position: fixed;
+    left: calc(50% - 200px);
+    width: 400px;
+    top: calc(50% + 200px);
+  }
+
 .link {
     --at-apply: "text-gray-400 dark:text-slate-700  hover:text-gray-700 dark:hover:text-slate-200 transition select-none";
 }

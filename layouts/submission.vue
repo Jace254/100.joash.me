@@ -74,9 +74,9 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
         <div text-2xl i-akar-icons-arrow-back />
       </RouterLink>
       <div font-mono opacity-50 pt-2 visible invisible md:visible>
-        Click F for Fullscreen
+        F for Fullscreen
       </div>
-      <div />
+      <div w-2rem />
     </div>
     <slot :submission="submission" />
   </div>

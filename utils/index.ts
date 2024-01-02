@@ -1,7 +1,5 @@
 import type { Updater } from '@tanstack/vue-table'
 import { type ClassValue, clsx } from 'clsx'
-
-// @ts-expect-error vendor
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
