@@ -13,9 +13,12 @@ const index = ref<number>()
 const prev = ref<typeof submissions[0]>()
 const next = ref<typeof submissions[0]>()
 const fullscreen = ref()
+const doc = ref()
 
 onMounted(async () => {
   await refreshNuxtData()
+  doc.value = document.querySelector('html')
+  fullscreen.value = useFullscreen(doc)
   const route = useRoute()
   shot.value = Boolean(route.query.shot)
   hideFrame.value = Boolean(route.query.hideFrame)
@@ -27,7 +30,6 @@ onMounted(async () => {
   prev.value = submissions[index.value - 1]
   next.value = submissions[index.value + 1]
 
-  fullscreen.value = useFullscreen(ref(document.querySelector('html')))
 
   useEventListener('keydown', (e) => {
     if (document) {
@@ -73,7 +75,7 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
       <RouterLink class="link w-2rem h-2rem flex items-center justify-center mt-2 " to="/">
         <div text-2xl i-akar-icons-arrow-back />
       </RouterLink>
-      <div font-mono opacity-50 pt-2 visible invisible md:visible>
+      <div v-if="!fullscreen?.isFullscreen ?? false" font-mono opacity-50 pt-2 visible invisible md:visible>
         F for Fullscreen
       </div>
       <div w-2rem />
