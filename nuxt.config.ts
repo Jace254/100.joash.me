@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      titleTemplate: '100 days',
+      titleTemplate: '100 days - %s',
     },
   },
 })
