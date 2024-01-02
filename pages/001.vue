@@ -35,10 +35,14 @@ const transformStyle = computed(() => {
 
 <template>
   <!-- <div flex flex-col gap-4> -->
-  <div rounded-b-full border border-foreground w-9em h-9em flex justify-center items-center :style="transformStyle">
-    <a>Magic Ball</a>
+  <div :style="transformStyle">
+    <div rounded-t-full border border-b-0 border-foreground w-9em h-5em flex justify-center items-center>
+      o o<br>
+    </div>
+    <div rounded-b-full border border-foreground w-9em h-9em flex justify-center items-center>
+      <a class="link" href="https://en.wikipedia.org/wiki/Kokeshi" target="_blank" rel="noopener">Kokeshi</a>
+    </div>
   </div>
-
   <div py3 class="box-description">
     <p v-if="!mobile && !shot" text-gray text-center>
       Use mobile to visit
