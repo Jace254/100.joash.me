@@ -1,21 +1,18 @@
 <template>
-<svg width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="1.5" y="1.5" width="131" height="131" stroke="url(#paint0_linear_93_14)" stroke-width="3"/>
-<circle cx="67" cy="67" r="65.5" stroke="url(#paint1_linear_93_14)" stroke-width="3"/>
-<path d="M11.5744 99L67 3.00001L122.426 99H11.5744Z" stroke="url(#paint2_linear_93_14)" stroke-width="3"/>
-<defs>
-<linearGradient id="paint0_linear_93_14" x1="67" y1="0" x2="67" y2="134" gradientUnits="userSpaceOnUse">
-<stop stop-color="#61F3D0"/>
-<stop offset="1" stop-color="#4229DA"/>
-</linearGradient>
-<linearGradient id="paint1_linear_93_14" x1="67" y1="0" x2="67" y2="134" gradientUnits="userSpaceOnUse">
-<stop stop-color="#61F3D0"/>
-<stop offset="1" stop-color="#4229DA"/>
-</linearGradient>
-<linearGradient id="paint2_linear_93_14" x1="67" y1="0" x2="67" y2="134" gradientUnits="userSpaceOnUse">
-<stop stop-color="#61F3D0"/>
-<stop offset="1" stop-color="#4229DA"/>
-</linearGradient>
-</defs>
-</svg>
+  <svg width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <mask id="mask0_99_8" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="134" height="134">
+      <rect x="3" y="3" width="128" height="128" stroke="white" stroke-width="6" />
+      <circle cx="67" cy="67" r="64" stroke="white" stroke-width="6" />
+      <path d="M14.1725 97.5L67 6L119.828 97.5H14.1725Z" stroke="white" stroke-width="6" />
+    </mask>
+    <g mask="url(#mask0_99_8)">
+      <rect x="-7" y="-10" width="155" height="155" fill="url(#paint0_linear_99_8)" />
+    </g>
+    <defs>
+      <linearGradient id="paint0_linear_99_8" x1="2.99999" y1="-10" x2="98" y2="145" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#EDFF1C" />
+        <stop offset="1" stop-color="#DB0707" />
+      </linearGradient>
+    </defs>
+  </svg>
 </template>

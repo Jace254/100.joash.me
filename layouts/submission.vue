@@ -1,6 +1,6 @@
 <template>
   <div h-100dvh h-screen w-screen of-hidden grid="~ rows-[max-content_1fr]" bg-base>
-    <div/>
+    <div i-ion-ios-arrow-back />
     <slot />
   </div>
 </template>
