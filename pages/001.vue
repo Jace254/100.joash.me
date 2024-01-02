@@ -35,8 +35,8 @@ const transformStyle = computed(() => {
 
 <template>
   <!-- <div flex flex-col gap-4> -->
-  <div  rounded-b-full border border-foreground p-8 :style="transformStyle">
-    Magic Ball
+  <div rounded-b-full border border-foreground w-9em h-9em flex justify-center items-center :style="transformStyle">
+    <a>Magic Ball</a>
   </div>
 
   <div py3 class="box-description">
