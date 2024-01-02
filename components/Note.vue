@@ -21,7 +21,7 @@ const close = () => active.value = false
     <div class="content border border-border p-8 rounded-t-2 sm:rounded-t-4 fixed bottom-0 bg-background shadow">
       <slot />
       <br>
-      <a class="link mr-3" :href="`https://github.com/Jace254/100.joash.me/blob/main/pages/${no}.vue`">source</a>
+      <a class="link mr-3" :href="`https://github.com/Jace254/100.joash.me/blob/main/pages/${no}.vue`" target="_blank" rel="noopener">source</a>
     </div>
   </div>
 </template>

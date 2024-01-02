@@ -34,7 +34,6 @@ const transformStyle = computed(() => {
 </script>
 
 <template>
-  <!-- <div flex flex-col gap-4> -->
   <div :style="transformStyle">
     <div rounded-t-full border border-b-0 border-foreground w-9em h-5em flex justify-center items-center>
       o o<br>
@@ -48,8 +47,6 @@ const transformStyle = computed(() => {
       Use mobile to visit
     </p>
   </div>
-
-  <!-- </div> -->
 
   <Note>
     Tilt your phone
