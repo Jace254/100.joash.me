@@ -12,6 +12,7 @@ const submission = ref<typeof submissions[0]>()
 const index = ref<number>()
 const prev = ref<typeof submissions[0]>()
 const next = ref<typeof submissions[0]>()
+const fullscreen = ref()
 
 onMounted(async () => {
   await refreshNuxtData()
@@ -26,16 +27,16 @@ onMounted(async () => {
   prev.value = submissions[index.value - 1]
   next.value = submissions[index.value + 1]
 
-  const fullscreen = useFullscreen(ref(document?.querySelector('html') ?? null))
+  fullscreen.value = useFullscreen(ref(document.querySelector('html')))
 
   useEventListener('keydown', (e) => {
     if (document) {
       if (document.activeElement === document.body) {
         if (e.key === 'f') {
-          if (fullscreen.isFullscreen.value)
-            fullscreen.exit()
+          if (fullscreen.value.isFullscreen.value)
+            fullscreen.value.exit()
           else
-            fullscreen.enter()
+            fullscreen.value.enter()
         }
       }
     }
@@ -68,10 +69,14 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
         <span class="opacity-50">{{ submission.date }}</span>
       </div>
     </div>
-    <div v-if="!shot && !hideFrame" class="nav font-mono">
-      <RouterLink class="link  h-4 block pt-2 " to="/">
+    <div v-if="!shot && !hideFrame" class="nav font-mono flex items-center justify-between">
+      <RouterLink class="link w-2rem h-2rem flex items-center justify-center mt-2 " to="/">
         <div text-2xl i-akar-icons-arrow-back />
       </RouterLink>
+      <div font-mono opacity-50 pt-2 visible invisible md:visible>
+        Click F for Fullscreen
+      </div>
+      <div />
     </div>
     <slot :submission="submission" />
   </div>
