@@ -30,7 +30,6 @@ onMounted(async () => {
   prev.value = submissions[index.value - 1]
   next.value = submissions[index.value + 1]
 
-
   useEventListener('keydown', (e) => {
     if (document) {
       if (document.activeElement === document.body) {
@@ -78,7 +77,12 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
       <div v-if="!fullscreen?.isFullscreen ?? false" font-mono opacity-50 pt-2 visible invisible md:visible>
         F for Fullscreen
       </div>
-      <div w-2rem />
+      <button v-if="!fullscreen?.isFullscreen" class="link" @click="fullscreen?.enter()" md:invisible visible>
+        <div text-2xl i-fluent-full-screen-maximize-16-filled />
+      </button>
+      <button v-if="fullscreen?.isFullscreen ?? false" class="link" @click="fullscreen?.exit()" md:invisible visible>
+        <div text-2xl i-fluent-full-screen-minimize-16-filled />
+      </button>
     </div>
     <slot :submission="submission" />
   </div>
