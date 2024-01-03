@@ -39,11 +39,9 @@ const transformStyle = computed(() => {
     <div rounded-t-full border border-b-0 border-foreground w-9em h-5em flex justify-center items-center>
       o o<br>
     </div>
-    <div fixed left="50%" top="50%" w-0 h-0 overflow-visible>
-      <a class="link" href="https://en.wikipedia.org/wiki/Kokeshi" target="_blank" rel="noopener" text-center style="width: 500px;transform: translate(-50%, -50%);">Kokeshi</a>
-    </div>
+    <div fixed left="50%" top="50%" w-1 h-1 rounded-full border overflow-visible style="transform: translate(-50%,-50%);"/>
     <div rounded-b-full border border-foreground w-9em h-9em flex justify-center items-center>
-      ( )
+      <a class="link" href="https://en.wikipedia.org/wiki/Kokeshi" target="_blank" rel="noopener">Kokeshi</a>
     </div>
   </div>
   <div py3 class="box-description">

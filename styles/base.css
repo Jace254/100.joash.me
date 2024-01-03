@@ -27,6 +27,11 @@
     transform: translate(-50%,-50%);
 }
 
+.box {
+    width: 400px;
+    height: 400px;
+}
+
 .box-description {
     position: fixed;
     left: calc(50% - 200px);
