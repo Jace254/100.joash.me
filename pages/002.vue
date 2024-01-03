@@ -7,7 +7,8 @@ definePageMeta({
 
 const size = ref(0.5)
 const opacity = ref(0)
-const duration = 500
+const coords = ref({ x: 0, y: 0 })
+const duration = 250
 
 const output = useTransition(size, {
   duration,
@@ -21,6 +22,21 @@ const outputOp = useTransition(opacity, {
 
 const targetEl = ref<HTMLDivElement>()
 const { x, y } = useMouse({ target: targetEl })
+const { pressed } = useMousePressed({
+  target: targetEl,
+})
+
+watch(pressed, () => {
+  if (pressed.value === true) {
+    coords.value = { x: x.value, y: y.value }
+    size.value = 1
+    opacity.value = 100
+  }
+  else {
+    size.value = 0.5
+    opacity.value = 0
+  }
+})
 
 function toggle() {
   size.value = size.value === 1 ? 0.5 : 1
@@ -31,33 +47,41 @@ function toggle() {
 <template>
   <button @click="toggle">
     Transition {{ x }}, {{ y }}
+    Coords {{ coords }}
   </button>
   <div
     class="box " h="500px"
-    border border-border
+    border border-border m-2
     rounded-lg flex items-center
-    justify-center bg-faded
+    justify-center bg-faded z="-1"
     relative overflow-hidden select-none
   >
     <div
-      class="box" ref="targetEl"
+      ref="targetEl" class="box"
       h="500px" border
       border-border rounded-lg flex
       items-center justify-center
       bg-faded relative overflow-hidden
-      select-none
+      select-none z="-1"
     >
-      <div class="text">
+      <div v-if="!pressed" class="text">
         Hold and rotate from anywhere
       </div>
-      <div class="radial-box box" :style="`transform: scale(${output}); opacity: ${outputOp}%;`">
+      <div
+        class="radial-box box"
+        :style="`
+        transform: scale(${output});
+        opacity: ${outputOp}%;
+        top: ${coords.y};
+        left: ${coords.x};`"
+      >
         <div class="box radial-container" />
         <div class="box radial-circle">
           <span class="vh">Hold and rotate</span>
         </div>
         <ul class="menu">
           <li>
-            <i i-solar-rewind-back-broken absolute text="24px" class="box item" />
+            <div i-solar-rewind-back-broken absolute text="24px" class="box item" />
           </li>
           <li>
             <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
