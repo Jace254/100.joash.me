@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TransitionPresets, useTransition } from '@vueuse/core'
+import { TransitionPresets, type UseMouseEventExtractor, useTransition } from '@vueuse/core'
 
 definePageMeta({
   layout: 'submission',
@@ -21,14 +21,17 @@ const outputOp = useTransition(opacity, {
 })
 
 const targetEl = ref<HTMLDivElement>()
-const { x, y } = useMouse({ target: targetEl })
 const { pressed } = useMousePressed({
   target: targetEl,
 })
 
+const { x, y } = useMouse({ target: targetEl })
+
 watch(pressed, () => {
+
   if (pressed.value === true) {
-    coords.value = { x: x.value, y: y.value }
+    coords.value.x =  x.value
+    coords.value.y = y.value
     size.value = 1
     opacity.value = 100
   }
@@ -37,69 +40,55 @@ watch(pressed, () => {
     opacity.value = 0
   }
 })
-
-function toggle() {
-  size.value = size.value === 1 ? 0.5 : 1
-  opacity.value = opacity.value === 100 ? 0 : 100
-}
 </script>
 
 <template>
-  <button @click="toggle">
-    Transition {{ x }}, {{ y }}
-    Coords {{ coords }}
-  </button>
   <div
-    class="box " h="500px"
-    border border-border m-2
-    rounded-lg flex items-center
-    justify-center bg-faded z="-1"
-    relative overflow-hidden select-none
+    ref="targetEl" class="box" border
+    border-border rounded-xl flex
+    items-center justify-center
+    bg-faded overflow-hidden
+    select-none
   >
+    <div v-if="!pressed" class="text">
+      Hold and rotate from anywhere
+    </div>
     <div
-      ref="targetEl" class="box"
-      h="500px" border
-      border-border rounded-lg flex
-      items-center justify-center
-      bg-faded relative overflow-hidden
-      select-none z="-1"
-    >
-      <div v-if="!pressed" class="text">
-        Hold and rotate from anywhere
-      </div>
-      <div
-        class="radial-box box"
-        :style="`
+      class="radial-box box"
+      :style="`
         transform: scale(${output});
         opacity: ${outputOp}%;
-        top: ${coords.y};
-        left: ${coords.x};`"
-      >
-        <div class="box radial-container" />
-        <div class="box radial-circle">
-          <span class="vh">Hold and rotate</span>
-        </div>
-        <ul class="menu">
-          <li>
-            <div i-solar-rewind-back-broken absolute text="24px" class="box item" />
-          </li>
-          <li>
-            <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-          </li>
-          <li>
-            <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-          </li>
-          <li>
-            <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-          </li>
-          <li>
-            <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-          </li>
-          <li>
-            <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-          </li>
-        </ul>
+        top: ${coords.y}px;
+        left: ${coords.x}px;
+        translate: -50% -50%;
+      `"
+      sm:top="50%"
+      sm:left="50%"
+    >
+      <div class="box radial-container" />
+      <div class="box radial-circle">
+        <span class="vh">Hold and rotate</span>
       </div>
+      <ul class="menu">
+        <li>
+          <div i-solar-rewind-back-broken class="box item" />
+        </li>
+        <li>
+          <div i-solar-rewind-back-broken class="box item" />
+        </li>
+        <li>
+          <div i-solar-rewind-back-broken class="box item" />
+        </li>
+        <li>
+          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
+        </li>
+        <li>
+          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
+        </li>
+        <li>
+          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
+        </li>
+      </ul>
     </div>
   </div>
   <Note />
@@ -108,6 +97,7 @@ function toggle() {
 <style scoped>
 .box {
     box-sizing: border-box;
+    margin: 0px;
 }
 .text {
     position: absolute;
@@ -129,7 +119,7 @@ function toggle() {
     width: 250px;
     height: 250px;
     border-radius: 9999px;
-    position: relative;
+    position: absolute;
     border: 1px solid hsl(0 0% 17.9%);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     z-index: 5;
