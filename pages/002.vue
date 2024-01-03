@@ -19,8 +19,6 @@ const outputOp = useTransition(opacity, {
   transition: TransitionPresets.easeInOutSine,
 })
 
-
-
 const targetEl = ref<HTMLDivElement>()
 const { x, y } = useMouse({ target: targetEl })
 
