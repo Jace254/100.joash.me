@@ -123,7 +123,7 @@ watch(selected, () => {
     ringOpacity.value = 0
     angle.value = -1
   }
-  if (angle.value === -1) {
+  else if (angle.value === -1) {
     ringOpacity.value = 1
     // Coming from a reset state, no need to animate, just show the new angle.
     angle.value = ringAngle.value || 0
