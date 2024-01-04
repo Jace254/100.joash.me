@@ -81,7 +81,6 @@ watch([width, height], () => {
 })
 
 watch(selected, () => {
-  console.log(selected.value)
   if (selected.value === null || selected.value === undefined) {
     // When nothing is selected, the angle should be reset.
     angle.value = -1
@@ -251,12 +250,10 @@ onMounted(async () => {
     inset: -12px;
 }
 .radial-container::after {
-    content: "";
+    content: "Nigga";
     position: absolute;
     z-index: 60;
     mask-image: linear-gradient(black, black), linear-gradient(black, black);
-    -webkit-mask-image: linear-gradient(black, black),linear-gradient(black, black);
-    -webkit-mask-composite: xor;
     -webkit-mask-position-x: initial, initial;
     -webkit-mask-position-y: initial, initial;
     mask-size: initial, initial;
@@ -266,6 +263,8 @@ onMounted(async () => {
     mask-mode: initial, initial;
     mask-composite: xor;
     pointer-events: none;
+    inset: -8px;
+    padding: 8px;
     background: conic-gradient(from var(--a), transparent 83.5%, var(--color-gray-9) 0, var(--color-gray-9) 100%);
     border-radius: inherit;
 }
