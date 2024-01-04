@@ -1,5 +1,4 @@
 <script setup lang='ts'>
-'use-client'
 import { useEventListener, useFullscreen, useTitle } from '@vueuse/core'
 import { submissions } from '@/lib'
 
@@ -14,15 +13,33 @@ const prev = ref<typeof submissions[0]>()
 const next = ref<typeof submissions[0]>()
 const fullscreen = ref()
 const doc = ref()
+const route = ref()
+
+onUpdated(() => {
+  
+})
+
+watchEffect(() => {
+  route.value = useRoute()
+  shot.value = Boolean(route.value.query.shot)
+  hideFrame.value = Boolean(route.value.query.hideFrame)
+  no.value = route.value.path.slice(1)
+  if (no.value.startsWith('x'))
+    no.value = no.value.slice(1)
+  index.value = submissions.findIndex(i => i.no === no.value)
+  submission.value = submissions[index.value]
+  prev.value = submissions[index.value - 1]
+  next.value = submissions[index.value + 1]
+})
 
 onMounted(async () => {
   await refreshNuxtData()
+  route.value = useRoute()
   doc.value = document.querySelector('html')
   fullscreen.value = useFullscreen(doc)
-  const route = useRoute()
-  shot.value = Boolean(route.query.shot)
-  hideFrame.value = Boolean(route.query.hideFrame)
-  no.value = route.path.slice(1)
+  shot.value = Boolean(route.value.query.shot)
+  hideFrame.value = Boolean(route.value.query.hideFrame)
+  no.value = route.value.path.slice(1)
   if (no.value.startsWith('x'))
     no.value = no.value.slice(1)
   index.value = submissions.findIndex(i => i.no === no.value)
@@ -51,7 +68,7 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
   <div class="viewer" :class="{ shot }" mx="24px" md:mx="0px" relative>
     <div v-if="submission" class="bottom-nav font-mono flex z-10">
       <div class="nav-links">
-        <RouterLink v-if="prev" class="prev link" :to="`/${prev.no}`">
+        <RouterLink v-if="prev" class="prev link" :to="`/${prev.no}`" replace>
           <span>{{ prev.title }}</span>
           <span class="mx-1 opacity-25">{{ prev.no }}</span>
         </RouterLink>
@@ -59,7 +76,7 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
           <span class="font-bold">{{ submission.title }}</span>
           <span class="mx-1 opacity-50">{{ submission.no }}</span>
         </div>
-        <RouterLink v-if="next" class="next link" :to="`/${next.no}`">
+        <RouterLink v-if="next" class="next link" :to="`/${next.no}`" replace>
           <span>{{ next.title }}</span>
           <span class="mx-1 opacity-25">{{ next.no }}</span>
         </RouterLink>

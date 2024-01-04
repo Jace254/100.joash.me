@@ -32,6 +32,8 @@ function getItemStyle(i: number) {
   return `--rotate: ${rotate}deg`
 }
 
+const cursor = ref('default')
+
 const items = [
   {
     icon: 'i-solar-microphone-large-broken',
@@ -66,10 +68,12 @@ watch(pressed, () => {
       coords.value.x = x.value
       coords.value.y = y.value
     }
+    cursor.value = 'move'
     size.value = 1
     opacity.value = 100
   }
   else {
+    cursor.value = 'default'
     size.value = 0.5
     opacity.value = 0
   }
@@ -90,16 +94,19 @@ onMounted(async () => {
       Hold and rotate from anywhere
     </div>
     <div
-      class="radial-box box"
+      class="radial-box box" :active="pressed"
       :style="`
         transform: scale(${output});
         opacity: ${outputOp}%;
-        top: ${`${coords.y !== 0 ? `${coords.y}px` : '50%'}`};
-        left: ${`${coords.x !== 0 ? `${coords.x}px` : '50%'}`};
+        cursor: ${cursor};
+        @media (min-width: 768px) {
+          .radial-box {
+            top:  ${`${coords.y !== 0 ? `${coords.y}px` : '50%'}`};
+            left: ${`${coords.x !== 0 ? `${coords.x}px` : '50%'}`};
+          }
+        }
       `"
       :class="pressed ? 'select-none' : ''"
-      sm:top="50%"
-      sm:left="50%"
     >
       <div class="box radial-container" />
       <div class="box radial-circle">
