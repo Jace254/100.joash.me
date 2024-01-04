@@ -48,7 +48,7 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
 </script>
 
 <template>
-  <div class="viewer" :class="{ shot }">
+  <div class="viewer" :class="{ shot }" mx="24px" md:mx="0px" relative>
     <div v-if="submission" class="bottom-nav font-mono flex z-10">
       <div class="nav-links">
         <RouterLink v-if="prev" class="prev link" :to="`/${prev.no}`">
@@ -77,14 +77,14 @@ useTitle(submission.value ? `${no}. ${submission.value.title}` : '404')
       <div v-if="!fullscreen?.isFullscreen ?? false" font-mono opacity-50 pt-2 visible invisible md:visible>
         F for Fullscreen
       </div>
-      <button v-if="!fullscreen?.isFullscreen" class="link" @click="fullscreen?.enter()" md:invisible visible>
+      <button v-if="!fullscreen?.isFullscreen" class="link" md:invisible visible @click="fullscreen?.enter()">
         <div text-2xl i-fluent-full-screen-maximize-16-filled />
       </button>
-      <button v-if="fullscreen?.isFullscreen ?? false" class="link" @click="fullscreen?.exit()" md:invisible visible>
+      <button v-if="fullscreen?.isFullscreen ?? false" class="link" md:invisible visible @click="fullscreen?.exit()">
         <div text-2xl i-fluent-full-screen-minimize-16-filled />
       </button>
     </div>
-    <slot :submission="submission" />
+    <slot :submission="submission" w-full />
   </div>
 </template>
 

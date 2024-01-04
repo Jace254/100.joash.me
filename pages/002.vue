@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { TransitionPresets, type UseMouseEventExtractor, useTransition } from '@vueuse/core'
+import { TransitionPresets, useTransition } from '@vueuse/core'
 
 definePageMeta({
   layout: 'submission',
 })
 
-const size = ref(0.5)
-const opacity = ref(0)
+const size = ref(1)
+const opacity = ref(100)
 const coords = ref({ x: 0, y: 0 })
 const duration = 250
 
@@ -27,6 +27,39 @@ const { pressed } = useMousePressed({
 
 const { x, y, sourceType } = useMouse({ target: targetEl })
 
+function getItemStyle(i: number) {
+  const rotate = (360 / 6) * i - 90
+  return `--rotate: ${rotate}deg`
+}
+
+const items = [
+  {
+    icon: 'i-solar-microphone-large-broken',
+    title: 'record',
+  },
+  {
+    icon: 'i-solar-rewind-back-broken',
+    title: 'rewind',
+  },
+  {
+    icon: 'i-solar-play-broken',
+    title: 'play',
+  },
+  {
+    icon: 'i-solar-pause-broken',
+    title: 'pause',
+  },
+  {
+    icon: 'i-solar-rewind-forward-broken',
+    title: 'forward',
+  },
+  {
+    icon: 'i-solar-stop-bold',
+    title: 'stop',
+  },
+
+]
+
 watch(pressed, () => {
   if (pressed.value === true) {
     if (sourceType.value === 'mouse') {
@@ -41,13 +74,15 @@ watch(pressed, () => {
     opacity.value = 0
   }
 })
+onMounted(async () => {
+  await refreshNuxtData()
+})
 </script>
 
 <template>
   <div
     ref="targetEl" class="box" border
     border-border rounded-xl flex
-    items-center justify-center
     bg-faded overflow-hidden
     select-none
   >
@@ -59,8 +94,8 @@ watch(pressed, () => {
       :style="`
         transform: scale(${output});
         opacity: ${outputOp}%;
-        top: ${sourceType === 'mouse' ? `${coords.y}px` : '50%'};
-        left: ${sourceType === 'mouse' ? `${coords.x}px` : '50%'};;
+        top: ${sourceType === 'mouse' ? pressed ? `${coords.y}px` : '50%' : y};
+        left: ${sourceType === 'mouse' ? pressed ? `${coords.x}px` : '50%' : x};;
         translate: -50% -50%;
       `"
       sm:top="50%"
@@ -71,23 +106,8 @@ watch(pressed, () => {
         <span class="vh">Hold and rotate</span>
       </div>
       <ul class="menu">
-        <li>
-          <div i-solar-rewind-back-broken class="box item" />
-        </li>
-        <li>
-          <div i-solar-rewind-back-broken class="box item" />
-        </li>
-        <li>
-          <div i-solar-rewind-back-broken class="box item" />
-        </li>
-        <li>
-          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-        </li>
-        <li>
-          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
-        </li>
-        <li>
-          <div i-solar-rewind-back-broken absolute h="24px" w="24px" class="box item" />
+        <li v-for="item, idx of items" :key="idx" :aria-label="item.title" :style="getItemStyle(idx)">
+          <div class="item" :class="item.icon" />
         </li>
       </ul>
     </div>
@@ -200,23 +220,8 @@ li {
     transition: background 250ms ease 0s;
 }
 
-.menu li:nth-of-type(1) {
-    transform: rotate(calc(var(--a) * -1)) skew(var(--a));
-}
-.menu li:nth-of-type(2) {
-    transform: rotate(var(--a)) skew(var(--a));
-}
-.menu li:nth-of-type(3) {
-    transform: rotate(calc(var(--a) * 3)) skew(var(--a));
-}
-.menu li:nth-of-type(4) {
-    transform: rotate(calc(var(--a) * 5)) skew(var(--a));
-}
-.menu li:nth-of-type(5) {
-    transform: rotate(calc(var(--a) * 7)) skew(var(--a));
-}
-.menu li:nth-of-type(6) {
-    transform: rotate(calc(var(--a) * 9)) skew(var(--a));
+.menu li {
+    transform: rotate(var(--rotate)) skew(var(--a));
 }
 
 li:active {
@@ -225,7 +230,10 @@ li:active {
 }
 
 .item {
-    transform: skew(calc(var(--a) * -1)) rotate(var(--a)) translateX(330px) translateY(15px);
-	font-size: 1.5rem;
+  position: absolute;
+  transform: skew(calc(var(--a) * -1)) rotate(calc(var(--rotate) * -1));
+  top: 76%;
+  left: 73%;
+  font-size: 1.5rem;
 }
 </style>

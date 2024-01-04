@@ -32,6 +32,9 @@ const transformStyle = computed(() => {
     transform: `rotate(${theta.value}rad)`,
   }
 })
+onMounted(async () => {
+  await refreshNuxtData()
+})
 </script>
 
 <template>
