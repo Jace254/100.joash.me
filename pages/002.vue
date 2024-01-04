@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { TransitionPresets, useTransition } from '@vueuse/core'
+import { cn } from '@/utils'
 
 definePageMeta({
   layout: 'submission',
 })
 
+const { width } = useWindowSize()
 const size = ref(1)
 const opacity = ref(100)
 const coords = ref({ x: 0, y: 0 })
@@ -99,14 +101,10 @@ onMounted(async () => {
         transform: scale(${output});
         opacity: ${outputOp}%;
         cursor: ${cursor};
-        @media (min-width: 768px) {
-          .radial-box {
-            top:  ${`${coords.y !== 0 ? `${coords.y}px` : '50%'}`};
-            left: ${`${coords.x !== 0 ? `${coords.x}px` : '50%'}`};
-          }
-        }
+        top:  ${`${coords.y !== 0 && width >= 768 ? `${coords.y}px` : '50%'}`};
+        left: ${`${coords.x !== 0 && width >= 768 ? `${coords.x}px` : '50%'}`};
       `"
-      :class="pressed ? 'select-none' : ''"
+      :class="cn(pressed ? 'select-none' : '')"
     >
       <div class="box radial-container" />
       <div class="box radial-circle">
