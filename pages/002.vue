@@ -25,13 +25,14 @@ const { pressed } = useMousePressed({
   target: targetEl,
 })
 
-const { x, y } = useMouse({ target: targetEl })
+const { x, y, sourceType } = useMouse({ target: targetEl })
 
 watch(pressed, () => {
-
   if (pressed.value === true) {
-    coords.value.x =  x.value
-    coords.value.y = y.value
+    if (sourceType.value === 'mouse') {
+      coords.value.x = x.value
+      coords.value.y = y.value
+    }
     size.value = 1
     opacity.value = 100
   }
@@ -58,8 +59,8 @@ watch(pressed, () => {
       :style="`
         transform: scale(${output});
         opacity: ${outputOp}%;
-        top: ${coords.y}px;
-        left: ${coords.x}px;
+        top: ${sourceType === 'mouse' ? `${coords.y}px` : '50%'};
+        left: ${sourceType === 'mouse' ? `${coords.x}px` : '50%'};;
         translate: -50% -50%;
       `"
       sm:top="50%"
