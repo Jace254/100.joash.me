@@ -94,10 +94,10 @@ onMounted(async () => {
       :style="`
         transform: scale(${output});
         opacity: ${outputOp}%;
-        top: ${sourceType === 'mouse' ? pressed ? `${coords.y}px` : '50%' : y};
-        left: ${sourceType === 'mouse' ? pressed ? `${coords.x}px` : '50%' : x};;
-        translate: -50% -50%;
+        top: ${`${coords.y !== 0 ? `${coords.y}px` : '50%'}`};
+        left: ${`${coords.x !== 0 ? `${coords.x}px` : '50%'}`};
       `"
+      :class="pressed ? 'select-none' : ''"
       sm:top="50%"
       sm:left="50%"
     >
@@ -145,6 +145,9 @@ onMounted(async () => {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     z-index: 5;
     touch-action: none;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
 }
 
 .radial-container {
