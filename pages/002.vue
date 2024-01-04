@@ -11,6 +11,7 @@ const { width, height } = useWindowSize()
 const size = ref(1)
 const opacity = ref(100)
 const coords = ref({ x: width.value / 2, y: height.value / 2 })
+const angle = ref(-1)
 const duration = 250
 
 const output = useTransition(size, {
@@ -23,8 +24,13 @@ const outputOp = useTransition(opacity, {
   transition: TransitionPresets.easeInOutSine,
 })
 
+const outputAn = useTransition(angle, {
+  duration,
+  transition: TransitionPresets.easeInOutSine,
+})
+
 const targetEl = ref<HTMLDivElement>()
-const ringEl = ref<HTMLDivElement>()
+const ringEl = ref()
 const menuEl = ref<HTMLDivElement>()
 const { pressed } = useMousePressed({
   target: targetEl,
@@ -39,22 +45,12 @@ function getItemStyle(i: number) {
 
 const ringAngle = ref<number | null>()
 const selected = ref<number | null>()
-const angle = ref()
 const dx = ref()
 const dy = ref()
 
-const { set } = useSpring(ringEl, {
-  stiffness: 0.04,
-  damping: 0.19,
-})
-
 function getMouseSelection() {
-  console.log(dx.value, dy.value)
-
   const distance = Math.sqrt(dx.value * dx.value + dy.value * dy.value)
-  console.log(distance)
   const innerRadius = menuEl.value!.getBoundingClientRect().width / 2
-  console.log(innerRadius)
   if (distance < innerRadius)
     return null
 
@@ -79,56 +75,25 @@ function getRingAngle(): number | null {
   return ringAngle.value + diff
 }
 
-// watch(selected, () => {
-//   if (selected.value === null || selected.value === undefined) {
-//     // When nothing is selected, the angle should be reset.
-//     angle.value = -1
-//     set({
-//       style: `{
-//           .radial-container {
-//             background: conic-gradient(
-//               from var(${angle.value}),
-//               var(--color-gray-11) 83.2%,
-//               var(--color-gray-9) 0,
-//               var(--color-gray-9) 100%
-//             );
-//           }
-//         }`,
-//     })
-//   }
-//   else if (angle.value === -1) {
-//     // Coming from a reset state, no need to animate, just show the new angle.
-//     angle.value = ringAngle || 0
-//     set({
-//       style: `{
-//           .radial-container {
-//             background: conic-gradient(
-//               from var(${angle.value}),
-//               var(--color-gray-11) 83.2%,
-//               var(--color-gray-9) 0,
-//               var(--color-gray-9) 100%
-//             );
-//           }
-//         }`,
-//     })
-//   }
-//   else {
-//     // Otherwise, we want to animate to the new angle.
-//     angle.value = ringAngle || 0
-//     set({
-//       style: `{
-//           .radial-container {
-//             background: conic-gradient(
-//               from var(${angle.value}),
-//               var(--color-gray-11) 83.2%,
-//               var(--color-gray-9) 0,
-//               var(--color-gray-9) 100%
-//             );
-//           }
-//         }`,
-//     })
-//   }
-// })
+watch([width, height], () => {
+  coords.value.x = width.value / 2
+  coords.value.y = height.value / 2
+})
+
+watch(selected, () => {
+  if (selected.value === null || selected.value === undefined) {
+    // When nothing is selected, the angle should be reset.
+    angle.value = -1
+  }
+  else if (angle.value === -1) {
+    // Coming from a reset state, no need to animate, just show the new angle.
+    angle.value = ringAngle.value || 0
+  }
+  else {
+    // Otherwise, we want to animate to the new angle.
+    angle.value = ringAngle.value || 0
+  }
+})
 
 const cursor = ref('default')
 
@@ -165,12 +130,11 @@ watch([x, y], () => {
   dy.value = y.value - coords.value.y
   selected.value = getMouseSelection()
   ringAngle.value = getRingAngle()
-  console.log(selected.value)
 })
 
 watch(pressed, () => {
   if (pressed.value === true) {
-    if (sourceType.value === 'mouse') {
+    if (sourceType.value === 'mouse' && width.value > 768) {
       coords.value.x = x.value
       coords.value.y = y.value
     }
@@ -210,8 +174,13 @@ onMounted(async () => {
       `"
       :class="cn(pressed ? 'select-none' : '')"
     >
-      <div ref="ringEl" class="box radial-container" />
-      <div class="box radial-circle" ref="menuEl">
+      <div
+        ref="ringEl" class="box radial-container"
+        :class="cn(selected !== null || selected !== undefined ? 'active' : '')"
+        :style="`--a: ${outputAn}deg`"
+        style="opacity: 1; transform: none;"
+      />
+      <div ref="menuEl" class="box radial-circle">
         <span class="vh">Hold and rotate</span>
       </div>
       <ul class="menu">
@@ -225,6 +194,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+::selection {
+    background: #fff9a8;
+    color: black
+}
 .box {
     box-sizing: border-box;
     margin: 0px;
@@ -243,10 +216,8 @@ onMounted(async () => {
 }
 
 .radial-box {
-    --a: 0deg;
+    --a: -1deg;
     --o: 0;
-    --color-gray-9: #50514f;
-    --color-gray-11: #252521;
     pointer-events: auto;
     width: 250px;
     height: 250px;
@@ -262,6 +233,9 @@ onMounted(async () => {
 }
 
 .radial-container {
+    --a: 0deg;
+    --color-gray-9: #50514f;
+    --color-gray-11: #252521;
     content: "";
     position: absolute;
     border: 8px solid hsl(0 0% 13.6%);
@@ -270,6 +244,25 @@ onMounted(async () => {
     border-radius: inherit;
     z-index: -1;
     inset: -12px;
+}
+.radial-container::after {
+    content: "";
+    position: absolute;
+    z-index: 60;
+    mask-image: linear-gradient(black, black), linear-gradient(black, black);
+    -webkit-mask-image: linear-gradient(black, black),linear-gradient(black, black);
+    -webkit-mask-composite: xor;
+    -webkit-mask-position-x: initial, initial;
+    -webkit-mask-position-y: initial, initial;
+    mask-size: initial, initial;
+    mask-repeat: initial, initial;
+    mask-origin: content-box, initial;
+    mask-clip: content-box, initial;
+    mask-mode: initial, initial;
+    mask-composite: xor;
+    pointer-events: none;
+    background: conic-gradient(from var(--a), transparent 83.5%, var(--color-gray-9) 0, var(--color-gray-9) 100%);
+    border-radius: inherit;
 }
 
 .radial-circle {
