@@ -81,6 +81,7 @@ watch([width, height], () => {
 })
 
 watch(selected, () => {
+  console.log(selected.value)
   if (selected.value === null || selected.value === undefined) {
     // When nothing is selected, the angle should be reset.
     angle.value = -1
@@ -100,27 +101,27 @@ const cursor = ref('default')
 const items = [
   {
     icon: 'i-solar-microphone-large-broken',
-    title: 'record',
+    title: 'Record',
   },
   {
     icon: 'i-solar-rewind-back-broken',
-    title: 'rewind',
+    title: 'Rewind',
   },
   {
     icon: 'i-solar-play-broken',
-    title: 'play',
+    title: 'Play',
   },
   {
     icon: 'i-solar-pause-broken',
-    title: 'pause',
+    title: 'Pause',
   },
   {
     icon: 'i-solar-rewind-forward-broken',
-    title: 'forward',
+    title: 'Forward',
   },
   {
     icon: 'i-solar-stop-bold',
-    title: 'stop',
+    title: 'Stop',
   },
 
 ]
@@ -163,6 +164,7 @@ onMounted(async () => {
     <div v-if="!pressed" class="text">
       Hold and rotate from anywhere
     </div>
+
     <div
       class="radial-box box" :active="pressed"
       :style="`
@@ -181,7 +183,10 @@ onMounted(async () => {
         style="opacity: 1; transform: none;"
       />
       <div ref="menuEl" class="box radial-circle">
-        <span class="vh">Hold and rotate</span>
+        <span v-if="!pressed && typeof selected !== 'number'" class="vh">Hold and rotate</span>
+        <span v-if="typeof selected === 'number'" class="vh">
+          {{ items[selected!].title }}
+        </span>
       </div>
       <ul class="menu">
         <li v-for="item, idx of items" :key="idx" :aria-label="item.title" :style="getItemStyle(idx)" :class="cn(selected === idx ? 'active' : '')">
