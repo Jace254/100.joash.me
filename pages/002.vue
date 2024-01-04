@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { cn } from '@/utils'
+import { useSpring } from '@vueuse/motion'
+import { cn, getAngleDifference, normalizeAngle } from '@/utils'
 
 definePageMeta({
   layout: 'submission',
 })
 
-const { width } = useWindowSize()
+const { width, height } = useWindowSize()
 const size = ref(1)
 const opacity = ref(100)
-const coords = ref({ x: 0, y: 0 })
+const coords = ref({ x: width.value / 2, y: height.value / 2 })
 const duration = 250
 
 const output = useTransition(size, {
@@ -23,6 +24,8 @@ const outputOp = useTransition(opacity, {
 })
 
 const targetEl = ref<HTMLDivElement>()
+const ringEl = ref<HTMLDivElement>()
+const menuEl = ref<HTMLDivElement>()
 const { pressed } = useMousePressed({
   target: targetEl,
 })
@@ -33,6 +36,99 @@ function getItemStyle(i: number) {
   const rotate = (360 / 6) * i - 90
   return `--rotate: ${rotate}deg`
 }
+
+const ringAngle = ref<number | null>()
+const selected = ref<number | null>()
+const angle = ref()
+const dx = ref()
+const dy = ref()
+
+const { set } = useSpring(ringEl, {
+  stiffness: 0.04,
+  damping: 0.19,
+})
+
+function getMouseSelection() {
+  console.log(dx.value, dy.value)
+
+  const distance = Math.sqrt(dx.value * dx.value + dy.value * dy.value)
+  console.log(distance)
+  const innerRadius = menuEl.value!.getBoundingClientRect().width / 2
+  console.log(innerRadius)
+  if (distance < innerRadius)
+    return null
+
+  const angle = Math.atan2(dy.value, dx.value) * (180 / Math.PI)
+  const normalizedAngle = normalizeAngle(angle - 90)
+  const stepAngle = 360 / 6
+
+  return Math.floor(normalizedAngle / stepAngle)
+}
+
+function getRingAngle(): number | null {
+  if (selected.value === undefined || selected.value === null)
+    return null
+
+  const newAngle = normalizeAngle((360 / 6) * selected.value - 120)
+  if (ringAngle.value === null || ringAngle.value === undefined)
+    return newAngle
+  const oldAngle = normalizeAngle(ringAngle.value || 0)
+
+  const diff = getAngleDifference(oldAngle, newAngle)
+
+  return ringAngle.value + diff
+}
+
+// watch(selected, () => {
+//   if (selected.value === null || selected.value === undefined) {
+//     // When nothing is selected, the angle should be reset.
+//     angle.value = -1
+//     set({
+//       style: `{
+//           .radial-container {
+//             background: conic-gradient(
+//               from var(${angle.value}),
+//               var(--color-gray-11) 83.2%,
+//               var(--color-gray-9) 0,
+//               var(--color-gray-9) 100%
+//             );
+//           }
+//         }`,
+//     })
+//   }
+//   else if (angle.value === -1) {
+//     // Coming from a reset state, no need to animate, just show the new angle.
+//     angle.value = ringAngle || 0
+//     set({
+//       style: `{
+//           .radial-container {
+//             background: conic-gradient(
+//               from var(${angle.value}),
+//               var(--color-gray-11) 83.2%,
+//               var(--color-gray-9) 0,
+//               var(--color-gray-9) 100%
+//             );
+//           }
+//         }`,
+//     })
+//   }
+//   else {
+//     // Otherwise, we want to animate to the new angle.
+//     angle.value = ringAngle || 0
+//     set({
+//       style: `{
+//           .radial-container {
+//             background: conic-gradient(
+//               from var(${angle.value}),
+//               var(--color-gray-11) 83.2%,
+//               var(--color-gray-9) 0,
+//               var(--color-gray-9) 100%
+//             );
+//           }
+//         }`,
+//     })
+//   }
+// })
 
 const cursor = ref('default')
 
@@ -63,6 +159,14 @@ const items = [
   },
 
 ]
+
+watch([x, y], () => {
+  dx.value = x.value - coords.value.x
+  dy.value = y.value - coords.value.y
+  selected.value = getMouseSelection()
+  ringAngle.value = getRingAngle()
+  console.log(selected.value)
+})
 
 watch(pressed, () => {
   if (pressed.value === true) {
@@ -106,12 +210,12 @@ onMounted(async () => {
       `"
       :class="cn(pressed ? 'select-none' : '')"
     >
-      <div class="box radial-container" />
-      <div class="box radial-circle">
+      <div ref="ringEl" class="box radial-container" />
+      <div class="box radial-circle" ref="menuEl">
         <span class="vh">Hold and rotate</span>
       </div>
       <ul class="menu">
-        <li v-for="item, idx of items" :key="idx" :aria-label="item.title" :style="getItemStyle(idx)">
+        <li v-for="item, idx of items" :key="idx" :aria-label="item.title" :style="getItemStyle(idx)" :class="cn(selected === idx ? 'active' : '')">
           <div class="item" :class="item.icon" />
         </li>
       </ul>
@@ -141,6 +245,8 @@ onMounted(async () => {
 .radial-box {
     --a: 0deg;
     --o: 0;
+    --color-gray-9: #50514f;
+    --color-gray-11: #252521;
     pointer-events: auto;
     width: 250px;
     height: 250px;
@@ -232,7 +338,7 @@ li {
     transform: rotate(var(--rotate)) skew(var(--a));
 }
 
-li:active {
+li.active {
     background: hsl(0 0% 17.9%);
     color: hsl(0 0% 93.0%);
 }
