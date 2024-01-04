@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { TransitionPresets, useTransition } from '@vueuse/core'
-import { useSpring } from '@vueuse/motion'
 import { cn, getAngleDifference, normalizeAngle } from '@/utils'
 
 definePageMeta({
@@ -12,90 +11,18 @@ const size = ref(1)
 const opacity = ref(100)
 const coords = ref({ x: width.value / 2, y: height.value / 2 })
 const angle = ref(-1)
-const duration = 250
-
-const output = useTransition(size, {
-  duration,
-  transition: TransitionPresets.easeInOutSine,
-})
-
-const outputOp = useTransition(opacity, {
-  duration,
-  transition: TransitionPresets.easeInOutSine,
-})
-
-const outputAn = useTransition(angle, {
-  duration,
-  transition: TransitionPresets.easeInOutSine,
-})
-
+const ringOpacity = ref(0)
 const targetEl = ref<HTMLDivElement>()
 const ringEl = ref()
 const menuEl = ref<HTMLDivElement>()
-const { pressed } = useMousePressed({
-  target: targetEl,
-})
-
-const { x, y, sourceType } = useMouse({ target: targetEl })
-
-function getItemStyle(i: number) {
-  const rotate = (360 / 6) * i - 90
-  return `--rotate: ${rotate}deg`
-}
-
+const cursor = ref('default')
 const ringAngle = ref<number | null>()
 const selected = ref<number | null>()
 const dx = ref()
 const dy = ref()
 
-function getMouseSelection() {
-  const distance = Math.sqrt(dx.value * dx.value + dy.value * dy.value)
-  const innerRadius = menuEl.value!.getBoundingClientRect().width / 2
-  if (distance < innerRadius)
-    return null
+const duration = 250
 
-  const angle = Math.atan2(dy.value, dx.value) * (180 / Math.PI)
-  const normalizedAngle = normalizeAngle(angle - 90)
-  const stepAngle = 360 / 6
-
-  return Math.floor(normalizedAngle / stepAngle)
-}
-
-function getRingAngle(): number | null {
-  if (selected.value === undefined || selected.value === null)
-    return null
-
-  const newAngle = normalizeAngle((360 / 6) * selected.value - 120)
-  if (ringAngle.value === null || ringAngle.value === undefined)
-    return newAngle
-  const oldAngle = normalizeAngle(ringAngle.value || 0)
-
-  const diff = getAngleDifference(oldAngle, newAngle)
-
-  return ringAngle.value + diff
-}
-
-watch([width, height], () => {
-  coords.value.x = width.value / 2
-  coords.value.y = height.value / 2
-})
-
-watch(selected, () => {
-  if (selected.value === null || selected.value === undefined) {
-    // When nothing is selected, the angle should be reset.
-    angle.value = -1
-  }
-  else if (angle.value === -1) {
-    // Coming from a reset state, no need to animate, just show the new angle.
-    angle.value = ringAngle.value || 0
-  }
-  else {
-    // Otherwise, we want to animate to the new angle.
-    angle.value = ringAngle.value || 0
-  }
-})
-
-const cursor = ref('default')
 
 const items = [
   {
@@ -125,6 +52,90 @@ const items = [
 
 ]
 
+
+const output = useTransition(size, {
+  duration,
+  transition: TransitionPresets.easeInOutSine,
+})
+
+const outputOp = useTransition(opacity, {
+  duration,
+  transition: TransitionPresets.easeInOutSine,
+})
+
+const outputRingOp = useTransition(ringOpacity, {
+  duration,
+  transition: TransitionPresets.easeInOutSine,
+})
+
+const outputAn = useTransition(angle, {
+  duration,
+  transition: TransitionPresets.easeInOutSine,
+})
+
+const { pressed } = useMousePressed({
+  target: targetEl,
+})
+
+const { x, y, sourceType } = useMouse({ target: targetEl })
+
+
+function getMouseSelection() {
+  const distance = Math.sqrt(dx.value * dx.value + dy.value * dy.value)
+  const innerRadius = menuEl.value!.getBoundingClientRect().width / 2
+  if (distance < innerRadius)
+    return null
+
+  const angle = Math.atan2(dy.value, dx.value) * (180 / Math.PI)
+  const normalizedAngle = normalizeAngle(angle - 90)
+  const stepAngle = 360 / 6
+
+  return Math.floor(normalizedAngle / stepAngle)
+}
+
+function getRingAngle(): number | null {
+  if (selected.value === undefined || selected.value === null)
+    return null
+
+  const newAngle = normalizeAngle((360 / 6) * selected.value - 120)
+  if (ringAngle.value === null || ringAngle.value === undefined)
+    return newAngle
+  const oldAngle = normalizeAngle(ringAngle.value || 0)
+
+  const diff = getAngleDifference(oldAngle, newAngle)
+
+  return ringAngle.value + diff
+}
+
+function getItemStyle(i: number) {
+  const rotate = (360 / 6) * i - 90
+  return `--rotate: ${rotate}deg`
+}
+
+watch([width, height], () => {
+  coords.value.x = width.value / 2
+  coords.value.y = height.value / 2
+})
+
+watch(selected, () => {
+  if (selected.value === null || selected.value === undefined) {
+    // When nothing is selected, the angle should be reset.
+    ringOpacity.value = 0
+    angle.value = -1
+  }
+  if (angle.value === -1) {
+    ringOpacity.value = 1
+    // Coming from a reset state, no need to animate, just show the new angle.
+    angle.value = ringAngle.value || 0
+  }
+  else {
+    ringOpacity.value = 1
+    // Otherwise, we want to animate to the new angle.
+    angle.value = ringAngle.value || 0
+  }
+})
+
+
 watch([x, y], () => {
   dx.value = x.value - coords.value.x
   dy.value = y.value - coords.value.y
@@ -147,9 +158,6 @@ watch(pressed, () => {
     size.value = 0.5
     opacity.value = 0
   }
-})
-onMounted(async () => {
-  await refreshNuxtData()
 })
 </script>
 
@@ -178,8 +186,8 @@ onMounted(async () => {
       <div
         ref="ringEl" class="box radial-container"
         :class="cn(selected !== null || selected !== undefined ? 'active' : '')"
-        :style="`--a: ${outputAn}deg`"
-        style="opacity: 1; transform: none;"
+        :style="`--a: ${outputAn}deg;--o: ${outputRingOp} `"
+        style="transform: none;"
       />
       <div ref="menuEl" class="box radial-circle">
         <span v-if="!pressed && typeof selected !== 'number'" class="vh">Hold and rotate</span>
@@ -238,7 +246,7 @@ onMounted(async () => {
 
 .radial-container {
     --a: 0deg;
-    --color-gray-9: #50514f;
+    --color-gray-9: hsl(0, 0%, 44%);
     --color-gray-11: #252521;
     content: "";
     position: absolute;
@@ -250,10 +258,11 @@ onMounted(async () => {
     inset: -12px;
 }
 .radial-container::after {
-    content: "Nigga";
+    content: "";
     position: absolute;
-    z-index: 60;
-    mask-image: linear-gradient(black, black), linear-gradient(black, black);
+    z-index: 1;
+    mask-image: conic-gradient(from var(--a), transparent 83.5%, var(--color-gray-9) 0, var(--color-gray-9) 100%), linear-gradient(black, black);
+    -webkit-mask-image: conic-gradient(from var(--a), transparent 83.5%, var(--color-gray-9) 0, var(--color-gray-9) 100%), linear-gradient(black, black);
     -webkit-mask-position-x: initial, initial;
     -webkit-mask-position-y: initial, initial;
     mask-size: initial, initial;
@@ -261,12 +270,14 @@ onMounted(async () => {
     mask-origin: content-box, initial;
     mask-clip: content-box, initial;
     mask-mode: initial, initial;
-    mask-composite: xor;
+    mask-composite: add;
+    -webkit-mask-composite: add;
     pointer-events: none;
     inset: -8px;
     padding: 8px;
-    background: conic-gradient(from var(--a), transparent 83.5%, var(--color-gray-9) 0, var(--color-gray-9) 100%);
+    background: conic-gradient(from var(--a), transparent 83.3%, var(--color-gray-9) 0, var(--color-gray-9) 100%);
     border-radius: inherit;
+    opacity: .2;
 }
 
 .radial-circle {
