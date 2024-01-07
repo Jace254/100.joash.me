@@ -9,6 +9,11 @@ const info: Info[] = [
     title: 'Radial',
     date: '01/03',
   },
+  {
+    title: 'Cryptic',
+    date: '01/04',
+  },
 ]
 
 export const submissions = info.map((i, idx) => ({ ...i, no: `${idx + 1}`.padStart(3, '0') }))
+export { lipsum } from './lorem'
